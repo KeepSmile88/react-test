@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>React 教学应用</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .tab {
+            padding: 12px 24px;
+            background: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+        .content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        .lesson {
+            display: none;
+        }
+        .lesson.active {
+            display: block;
+        }
+        .lesson h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        .lesson h3 {
+            color: #764ba2;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        .lesson p {
+            line-height: 1.8;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        .code-block {
+            background: #f5f5f5;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+        }
+        .demo-area {
+            background: #f9f9f9;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            min-height: 100px;
+        }
+        .interactive-demo {
+            text-align: center;
+        }
+        .demo-button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        .demo-button:hover {
+            background: #764ba2;
+            transform: scale(1.05);
+        }
+        .demo-input {
+            padding: 10px;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            font-size: 16px;
+            margin: 10px;
+            width: 250px;
+        }
+        .counter-display {
+            font-size: 3em;
+            color: #667eea;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .item-list {
+            list-style: none;
+            padding: 0;
+        }
+        .item-list li {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .delete-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // 计数器演示组件
+        function CounterDemo() {
+            const [count, setCount] = useState(0);
+            
+            return (
+                <div className="interactive-demo">
+                    <div className="counter-display">{count}</div>
+                    <button className="demo-button" onClick={() => setCount(count + 1)}>
+                        增加 +1
+                    </button>
+                    <button className="demo-button" onClick={() => setCount(count - 1)}>
+                        减少 -1
+                    </button>
+                    <button className="demo-button" onClick={() => setCount(0)}>
+                        重置
+                    </button>
+                </div>
+            );
+        }
+
+        // 输入演示组件
+        function InputDemo() {
+            const [text, setText] = useState('');
+            
+            return (
+                <div className="interactive-demo">
+                    <input 
+                        className="demo-input"
+                        type="text" 
+                        value={text}
+                        onChange={(e) => setText(e.target.value)}
+                        placeholder="输入一些文字..."
+                    />
+                    <p style={{marginTop: '20px', fontSize: '1.2em'}}>
+                        你输入了: <strong>{text}</strong>
+                    </p>
+                    <p style={{color: '#666'}}>字符数: {text.length}</p>
+                </div>
+            );
+        }
+
+        // 列表演示组件
+        function ListDemo() {
+            const [items, setItems] = useState(['学习 React', '理解组件', '掌握 Hooks']);
+            const [newItem, setNewItem] = useState('');
+            
+            const addItem = () => {
+                if (newItem.trim()) {
+                    setItems([...items, newItem]);
+                    setNewItem('');
+                }
+            };
+            
+            const deleteItem = (index) => {
+                setItems(items.filter((_, i) => i !== index));
+            };
+            
+            return (
+                <div>
+                    <div style={{marginBottom: '20px', textAlign: 'center'}}>
+                        <input 
+                            className="demo-input"
+                            type="text" 
+                            value={newItem}
+                            onChange={(e) => setNewItem(e.target.value)}
+                            placeholder="添加新项目..."
+                            onKeyPress={(e) => e.key === 'Enter' && addItem()}
+                        />
+                        <button className="demo-button" onClick={addItem}>
+                            添加
+                        </button>
+                    </div>
+                    <ul className="item-list">
+                        {items.map((item, index) => (
+                            <li key={index}>
+                                <span>{item}</span>
+                                <button className="delete-btn" onClick={() => deleteItem(index)}>
+                                    删除
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            );
+        }
+
+        // 主应用组件
+        function App() {
+            const [activeTab, setActiveTab] = useState(0);
+            
+            const lessons = [
+                {
+                    title: '什么是 React?',
+                    content: (
+                        <div>
+                            <p>React 是一个用于构建用户界面的 JavaScript 库，由 Facebook 开发和维护。</p>
+                            <h3>核心特点：</h3>
+                            <p>• <strong>组件化</strong>：将 UI 拆分成独立、可复用的组件</p>
+                            <p>• <strong>声明式</strong>：描述界面应该是什么样子，React 负责更新</p>
+                            <p>• <strong>虚拟 DOM</strong>：高效的 DOM 更新机制</p>
+                            
+                            <h3>引入 React：</h3>
+                            <div className="code-block">
+{`<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>\`}
+                            </div>
+                        </div>
+                    )
+                },
+                {
+                    title: '组件基础',
+                    content: (
+                        <div>
+                            <p>React 组件是构建界面的基本单元，它接受输入（props）并返回要显示的内容。</p>
+                            
+                            <h3>函数组件示例：</h3>
+                            <div className="code-block">
+{`function Welcome(props) {
+    return <h1>你好, {props.name}!</h1>;
+}
+
+// 使用组件
+<Welcome name="张三" />`}
+                            </div>
+                            
+                            <p>组件可以组合使用，构建复杂的用户界面。每个组件负责自己的逻辑和显示。</p>
+                        </div>
+                    )
+                },
+                {
+                    title: 'State 状态管理',
+                    content: (
+                        <div>
+                            <p>State 是组件的私有数据，当 state 改变时，组件会重新渲染。使用 useState Hook 来添加状态。</p>
+                            
+                            <h3>useState 示例：</h3>
+                            <div className="code-block">
+{`const [count, setCount] = useState(0);
+
+// count 是当前值
+// setCount 是更新函数
+// 0 是初始值`}
+                            </div>
+                            
+                            <h3>互动演示 - 计数器：</h3>
+                            <div className="demo-area">
+                                <CounterDemo />
+                            </div>
+                            
+                            <p>点击按钮改变计数，观察组件如何根据状态更新重新渲染。</p>
+                        </div>
+                    )
+                },
+                {
+                    title: '事件处理',
+                    content: (
+                        <div>
+                            <p>React 事件使用驼峰命名，并传递函数而不是字符串。</p>
+                            
+                            <h3>事件处理示例：</h3>
+                            <div className="code-block">
+{`<button onClick={handleClick}>
+    点击我
+</button>
+
+function handleClick() {
+    alert('按钮被点击了!');
+}`}
+                            </div>
+                            
+                            <h3>互动演示 - 输入框：</h3>
+                            <div className="demo-area">
+                                <InputDemo />
+                            </div>
+                            
+                            <p>试试在输入框中输入文字，观察 onChange 事件如何更新状态。</p>
+                        </div>
+                    )
+                },
+                {
+                    title: '列表渲染',
+                    content: (
+                        <div>
+                            <p>在 React 中使用 map() 方法渲染列表，每个列表项需要一个唯一的 key。</p>
+                            
+                            <h3>列表渲染示例：</h3>
+                            <div className="code-block">
+{`const items = ['苹果', '香蕉', '橙子'];
+
+return (
+    <ul>
+        {items.map((item, index) => (
+            <li key={index}>{item}</li>
+        ))}
+    </ul>
+);`}
+                            </div>
+                            
+                            <h3>互动演示 - 待办列表：</h3>
+                            <div className="demo-area">
+                                <ListDemo />
+                            </div>
+                            
+                            <p>尝试添加和删除项目，体验列表的动态更新。</p>
+                        </div>
+                    )
+                }
+            ];
+            
+            return (
+                <div className="container">
+                    <div className="header">
+                        <h1>🚀 React 互动教学</h1>
+                        <p>通过实例学习 React 基础知识</p>
+                    </div>
+                    
+                    <div className="tabs">
+                        {lessons.map((lesson, index) => (
+                            <button
+                                key={index}
+                                className={`tab ${activeTab === index ? 'active' : ''}`}
+                                onClick={() => setActiveTab(index)}
+                            >
+                                {lesson.title}
+                            </button>
+                        ))}
+                    </div>
+                    
+                    <div className="content">
+                        {lessons.map((lesson, index) => (
+                            <div
+                                key={index}
+                                className={`lesson ${activeTab === index ? 'active' : ''}`}
+                            >
+                                <h2>{lesson.title}</h2>
+                                {lesson.content}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+
+        // 渲染应用
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
